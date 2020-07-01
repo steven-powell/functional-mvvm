@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30128.74
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FunctionalMVVM", "FunctionalMVVM\FunctionalMVVM.csproj", "{2AD185A3-9802-4708-8C63-6D73720ABD32}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FunctionalMVVM.Tests", "FunctionalMVVM.Tests\FunctionalMVVM.Tests.csproj", "{A177BCCE-6E1F-4988-8CF5-A1B792AB6327}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2AD185A3-9802-4708-8C63-6D73720ABD32}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2AD185A3-9802-4708-8C63-6D73720ABD32}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2AD185A3-9802-4708-8C63-6D73720ABD32}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2AD185A3-9802-4708-8C63-6D73720ABD32}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A177BCCE-6E1F-4988-8CF5-A1B792AB6327}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A177BCCE-6E1F-4988-8CF5-A1B792AB6327}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A177BCCE-6E1F-4988-8CF5-A1B792AB6327}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A177BCCE-6E1F-4988-8CF5-A1B792AB6327}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {31816002-B64D-41F9-9646-5CBBA5C5B7FF}
+	EndGlobalSection
+EndGlobal
