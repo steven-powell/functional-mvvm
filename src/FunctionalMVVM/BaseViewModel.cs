@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
@@ -25,6 +26,25 @@ namespace FunctionalMVVM
 			else
 				return defaultValue;
 		}
+
+		/// <summary>
+		/// Version of Get that returns an ObservableCollection<T>. If not initialized then it creates the collection.
+		/// Declaring a setter is optional.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="memberName"></param>
+		/// <returns></returns>
+		protected ObservableCollection<T> GetCollection<T>([CallerMemberName] string memberName = null)
+        {
+			var collection = Get(default(ObservableCollection<T> ), memberName);
+			if(collection == null)
+            {
+				collection = new ObservableCollection<T>();
+				Set(collection, memberName);
+            }
+			return collection;
+        }
+
 		/// <summary>
 		/// Set the value of <paramref name="memberName"/> to <paramref name="value"/> and invoke the PropertyChanged event.
 		/// </summary>
@@ -38,6 +58,7 @@ namespace FunctionalMVVM
 			if (value?.Equals(currentValue) != true && !(value == null && currentValue == null))
 				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(memberName));
 		}
+
 		/// <summary>
 		/// Defines the value of a member named <paramref name="memberName"/> with an <paramref name="expression"/>. The expression is used to calculate the value and any property references are extracted
 		/// so changes to those properties will cause a recalculation and property change for <paramref name="memberName"/>.

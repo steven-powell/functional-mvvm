@@ -26,6 +26,7 @@ namespace FunctionalMVVM.Extensions
 
 				
 				INotifyPropertyChanged vm = null;
+				var propertyName = outerProp.Name;
 				if (innerMember.Member is FieldInfo innerField)
 				{
 					ConstantExpression ce = (ConstantExpression)innerMember.Expression;
@@ -37,15 +38,28 @@ namespace FunctionalMVVM.Extensions
 				{
 					vm = outerCE.Value as INotifyPropertyChanged;					
 				}
-				
+				else if (outerMember.Expression is MemberExpression outerME)
+				{
+					propertyName = outerME.Member.Name;
+					if(outerME.Expression is ConstantExpression outerMECE)
+                    {
+						vm = outerMECE.Value as INotifyPropertyChanged;
+						if(vm != null && outerME.Member is PropertyInfo pi)
+						{
+							var propVal = pi.GetValue(vm);
+							if(propVal is INotifyPropertyChanged propVm)
+                            {
+								// if the property is also INotifyPropertyChanged then listen for changes to it's property as well.
+								_viewModelProperties.Add(Tuple.Create(propVm, outerMember.Member.Name));
+                            }
+                        }
+                    }
+				}
 
-				if(vm != null)
-					_viewModelProperties.Add(Tuple.Create(vm, outerProp.Name));
 
-				// outerObj is the actual object..
-				
+				if (vm != null)
+					_viewModelProperties.Add(Tuple.Create(vm, propertyName));
 
-				//_propertyNames.Add(member.Name);
 				return base.VisitMember(outerMember);
 			}
 
