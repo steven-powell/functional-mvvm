@@ -27,6 +27,7 @@ using FunctionalMVVM.Extensions;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 
 namespace FunctionalMVVM.Tests
 {
@@ -47,6 +48,7 @@ namespace FunctionalMVVM.Tests
 		public bool IsComplete => Get(false);
 		public ObservableCollection<Invoice> Invoices => GetCollection<Invoice>();
 		public bool IsCurrentCustomer => Get(false);
+		public double AmountOwing => Get(0.0);
 
 		public Contact()
 		{
@@ -54,6 +56,7 @@ namespace FunctionalMVVM.Tests
 			Define(nameof(PhoneNumber), () => RegionCode + "-" + NationalPhoneNumber);
 			Define(nameof(IsComplete), () => !string.IsNullOrEmpty(LastName) && !string.IsNullOrEmpty(FirstName) && PhoneNumber.Length > 10);
 			Define(nameof(IsCurrentCustomer), () => Invoices.Count > 0);
+			Define(nameof(AmountOwing), () => Invoices.Where(inv => !inv.IsPaid).Sum(inv => inv.Total));
 		}
 	}
 
@@ -91,6 +94,26 @@ namespace FunctionalMVVM.Tests
 				Total = 100.0
 			});
 			Assert.IsTrue(t.IsCurrentCustomer);
+		}
+
+		[TestMethod]
+		public void CollectionChangesTriggerRecalculation()
+		{
+			var t = new Contact();
+			t.Invoices.Add(new Invoice()
+			{
+				InvoiceNumber = 1,
+				Total = 100.0
+			});
+			Assert.AreEqual(100.0, t.AmountOwing);
+			t.Invoices.Add(new Invoice()
+			{
+				InvoiceNumber = 1,
+				Total = 300.0
+			});
+			Assert.AreEqual(400.0, t.AmountOwing);
+			t.Invoices.RemoveAt(1);
+			Assert.AreEqual(100.0, t.AmountOwing);
 		}
 
 

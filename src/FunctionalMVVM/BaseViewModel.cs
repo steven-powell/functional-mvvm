@@ -25,6 +25,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
@@ -110,6 +111,24 @@ namespace FunctionalMVVM
 				_disposeActions.Add(() =>
 					objName.Item1.PropertyChanged -= handler
 				);
+
+				var objType = objName.Item1.GetType();
+				var propInfo = objType.GetProperty(objName.Item2);
+				if (typeof(INotifyCollectionChanged).IsAssignableFrom(propInfo.PropertyType))
+                {
+					// changes to the items in the collection trigger recalculation.
+					NotifyCollectionChangedEventHandler colHandler = (s, e) =>
+					{
+						var value = compiledExpression();
+						Set(value, memberName);
+					};
+
+					var collection = (INotifyCollectionChanged)propInfo.GetValue(objName.Item1);
+					collection.CollectionChanged += colHandler;
+					_disposeActions.Add(() =>
+						collection.CollectionChanged -= colHandler);
+                }
+
 				// set initial value.
 				Set(compiledExpression(), memberName);
 			}

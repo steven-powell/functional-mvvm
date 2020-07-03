@@ -93,8 +93,7 @@ namespace FunctionalMVVM.Extensions
 		{
 			var v = new Visitor();
 			v.Visit(expression);
-			foreach (var n in v.ViewModelProperties)
-				Debug.WriteLine(n);
+
 			return v.ViewModelProperties;
 		}
 	}
