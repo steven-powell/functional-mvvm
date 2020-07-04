@@ -140,9 +140,20 @@ namespace FunctionalMVVM
 				Set(compiledExpression(), memberName);
 			}
 		}
+		/// <summary>
+		/// Any change to <paramref name="memberName"/> will be validated with <paramref name="validationFunc"/>. <paramref name="validationFunc"/> should return a return an error message (string), 
+		/// a custom error object, or null if the property is in a valid state.
+		/// </summary>
+		/// <param name="memberName"></param>
+		/// <param name="validationFunc"></param>
 		protected void Validate(string memberName, Func<object> validationFunc)
 			=> AddValidationRule(memberName, validationFunc);
-        
+
+		/// <summary>
+		/// Validates the whole object on any change to any of the properties using the validation function: <paramref name="validationFunc"/>. <paramref name="validationFunc"/> should return a return an error message (string), 
+		/// a custom error object, or null if the object is in a valid state.
+		/// </summary>
+		/// <param name="validationFunc"></param>
 		protected void ValidateWhole(Func<object> validationFunc)
 			=> AddValidationRule(string.Empty, validationFunc);
 
