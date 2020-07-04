@@ -57,6 +57,15 @@ namespace FunctionalMVVM.Tests
 			Define(nameof(IsComplete), () => !string.IsNullOrEmpty(LastName) && !string.IsNullOrEmpty(FirstName) && PhoneNumber.Length > 10);
 			Define(nameof(IsCurrentCustomer), () => Invoices.Count > 0);
 			Define(nameof(AmountOwing), () => Invoices.Where(inv => !inv.IsPaid).Sum(inv => inv.Total));
+
+			Validate(nameof(NationalPhoneNumber), () =>
+			{
+				if (string.IsNullOrEmpty(NationalPhoneNumber))
+					return "Phone number is required.";
+				else if (NationalPhoneNumber.Length < 10)
+					return "Phone number must be at least 10 digits.";
+				return null;
+			});
 		}
 	}
 
@@ -116,10 +125,15 @@ namespace FunctionalMVVM.Tests
 			Assert.AreEqual(100.0, t.AmountOwing);
 		}
 
-
-		public void TestExpr<T>(Expression<T> expression)
-		{
-			var members = expression.ExtractMembers();
+		[TestMethod]
+		public void RunsValidation()
+        {
+			var t = new Contact();
+			t.NationalPhoneNumber = "Test";
+			Assert.IsTrue(t.HasErrors);
+			Assert.AreEqual("Phone number must be at least 10 digits.", t.GetErrors("NationalPhoneNumber").Cast<object>().FirstOrDefault());
+			t.NationalPhoneNumber = "999-999-9999";
+			Assert.IsFalse(t.HasErrors);
 		}
 	}
 }

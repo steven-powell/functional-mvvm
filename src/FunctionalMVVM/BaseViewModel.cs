@@ -23,27 +23,31 @@
 #endregion
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using FunctionalMVVM.Extensions;
 
 namespace FunctionalMVVM
 {
-	public abstract class BaseViewModel : INotifyPropertyChanged, IDisposable
+	public abstract class BaseViewModel : INotifyPropertyChanged, INotifyDataErrorInfo, IDisposable
 	{
 		public event PropertyChangedEventHandler PropertyChanged;
-		/// <summary>
-		/// Get the value of <paramref name="memberName"/>.
-		/// </summary>
-		/// <typeparam name="T"></typeparam>
-		/// <param name="defaultValue"></param>
-		/// <param name="memberName"></param>
-		/// <returns></returns>
-		protected T Get<T>(T defaultValue = default, [CallerMemberName] string memberName = null)
+        public event EventHandler<DataErrorsChangedEventArgs> ErrorsChanged;
+
+        /// <summary>
+        /// Get the value of <paramref name="memberName"/>.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="defaultValue"></param>
+        /// <param name="memberName"></param>
+        /// <returns></returns>
+        protected T Get<T>(T defaultValue = default, [CallerMemberName] string memberName = null)
 		{
 			object value;
 			if (_currentValues.TryGetValue(memberName, out value))
@@ -82,6 +86,9 @@ namespace FunctionalMVVM
 			_currentValues[memberName] = value;
 			if (value?.Equals(currentValue) != true && !(value == null && currentValue == null))
 				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(memberName));
+
+			RunValidation(memberName);
+			RunValidation(string.Empty);
 		}
 
 		/// <summary>
@@ -133,12 +140,53 @@ namespace FunctionalMVVM
 				Set(compiledExpression(), memberName);
 			}
 		}
+		protected void Validate(string memberName, Func<object> validationFunc)
+			=> AddValidationRule(memberName, validationFunc);
+        
+		protected void ValidateWhole(Func<object> validationFunc)
+			=> AddValidationRule(string.Empty, validationFunc);
+
+		private void ClearErrors(string memberName) => _errors.Remove(memberName);
+		private void RunValidation(string memberName)
+        {
+			ClearErrors(memberName);
+			List<Func<object>> rules;
+			if(_validationRules.TryGetValue(memberName, out rules))
+            {
+				var errors = rules.Select(rule => rule()).Where(error => error != null).ToList();
+				if (errors.Any())
+					_errors[memberName] = errors;
+            }
+        }
+		private void AddValidationRule(string memberName, Func<object> rule)
+		{
+			List<Func<object>> rules = null;
+			if(!_validationRules.TryGetValue(memberName, out rules))
+            {
+				rules = new List<Func<object>>();
+				_validationRules[memberName] = rules;
+            }
+			rules.Add(rule);
+		}
 
 
+		#region INotifyDataErrorInfo
+		public bool HasErrors => _errors.Any();
+		public IEnumerable GetErrors(string propertyName)
+		{
+			List<object> errors;
+			if (_errors.TryGetValue(propertyName, out errors))
+				return errors;
+			return new object[] { };
+		}
+		#endregion
+		private Dictionary<string, List<Func<object>>> _validationRules = new Dictionary<string, List<Func<object>>>();
+		private Dictionary<string, List<object>> _errors = new Dictionary<string, List<object>>();
 		private Dictionary<string, object> _currentValues = new Dictionary<string, object>();
 		#region IDisposable
 		private List<Action> _disposeActions = new List<Action>();
 		private bool disposedValue;
+
 		protected virtual void Dispose(bool disposing)
 		{
 			if (!disposedValue)
@@ -160,6 +208,7 @@ namespace FunctionalMVVM
 			Dispose(disposing: true);
 			GC.SuppressFinalize(this);
 		}
-		#endregion
-	}
+
+        #endregion
+    }
 }
