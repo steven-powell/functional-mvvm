@@ -31,7 +31,7 @@ using System.Text;
 
 namespace FunctionalMVVM.Extensions
 {
-	public static class ExpressionExtensions
+	internal static class ExpressionExtensions
 	{
 		private class Visitor : ExpressionVisitor
 		{
