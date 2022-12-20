@@ -69,8 +69,8 @@ namespace FunctionalMVVM
 			if(collection == null)
             {
 				collection = new ObservableCollection<T>();
-				Set(collection, memberName);
-            }
+				_currentValues[memberName] = collection;
+			}
 			return collection;
         }
 
