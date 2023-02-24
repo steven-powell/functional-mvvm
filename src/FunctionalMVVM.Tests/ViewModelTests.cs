@@ -78,7 +78,7 @@ namespace FunctionalMVVM.Tests
 			var t = new Contact();
 			t.FirstName = "Albert";
 			t.LastName = "Einstein";
-			t.NationalPhoneNumber = "000-000-0000";
+			t.NationalPhoneNumber = "111-111-1111";
 			t.RegionCode = 44;
 			Assert.AreEqual("Albert Einstein", t.FullName);
 			Assert.AreEqual("44-000-000-0000", t.PhoneNumber);
