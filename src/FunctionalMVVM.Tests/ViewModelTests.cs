@@ -72,6 +72,7 @@ namespace FunctionalMVVM.Tests
 	[TestClass]
 	public class ViewModelTests
 	{
+		// FROM MASTER
 		[TestMethod]
 		public void DefinedPropertiesRecalculateWhenDependentPropertiesChange()
 		{
