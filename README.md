@@ -21,7 +21,7 @@ public class Contact : BaseViewModel
 	public ObservableCollection<Invoice> Invoices => GetCollection<Invoice>();
 	public bool IsCurrentCustomer => Get(false);
 	public double AmountOwing => Get(0.0);
-a
+
 	public Contact()
 	{
 		Define(nameof(FullName), () => $"{FirstName} {LastName}");
